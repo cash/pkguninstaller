@@ -24,14 +24,15 @@ class PackageUninstaller(clustersetup.DefaultClusterSetup):
         log.info('Uninstalling the following packages on all nodes:')
         log.info(', '.join(self.packages), extra=dict(__raw__=True))
         pkgs = ' '.join(self.packages)
+        cmd = 'remove %s' % pkgs
         for node in nodes:
-            self.pool.simple_job(node.apt_install, (pkgs), jobid=node.alias)
+            self.pool.simple_job(node.apt_command, (cmd), jobid=node.alias)
         self.pool.wait(len(nodes))
 
     def on_add_node(self, new_node, nodes, master, user, user_shell, volumes):
         log.info('Uninstalling the following packages on %s:' % new_node.alias)
         pkgs = ' '.join(self.packages)
-        new_node.apt_command('remove %' % pkgs)
+        new_node.apt_command('remove %s' % pkgs)
 
     def on_remove_node(self, node, nodes, master, user, user_shell, volumes):
         raise NotImplementedError("on_remove_node method not implemented")
